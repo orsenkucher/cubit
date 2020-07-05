@@ -125,7 +125,7 @@ class HydratedStorage implements Storage {
   /// `compact` is [HydratedStorage] specific feature,
   /// to use it downcast `Storage` to `HydratedStorage`.
   Future<void> compact() {
-    return _lock.synchronized(_box.compact);
+    return _box.isOpen ? _lock.synchronized(_box.compact) : Future.value();
   }
 }
 

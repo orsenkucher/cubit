@@ -70,12 +70,11 @@ void main() {
         expect(box.path, p.join(directory.path, 'hydrated_box.hive'));
       });
 
-      test('usues defaultCompactionStrategy when needed', () async {
+      test('uses defaultCompactionStrategy when needed', () async {
         storage = await HydratedStorage.build(compactionStrategy: null);
         // TODO
       });
 
-      // performCompactionIfNeeded
       test('invokes compactionStrategy', () async {
         var counter = 0;
         storage = await HydratedStorage.build(compactionStrategy: (_, __) {
@@ -154,6 +153,20 @@ void main() {
           when(box.isOpen).thenReturn(true);
           await storage.clear();
           verify(box.deleteFromDisk()).called(1);
+        });
+      });
+
+      group('compact', () {
+        test('not closed box', () async {
+          when(box.isOpen).thenReturn(false);
+          await (storage as HydratedStorage).compact();
+          verifyNever(await box.compact());
+        });
+
+        test('opened box', () async {
+          when(box.isOpen).thenReturn(true);
+          await (storage as HydratedStorage).compact();
+          verify(await box.compact()).called(1);
         });
       });
     });
