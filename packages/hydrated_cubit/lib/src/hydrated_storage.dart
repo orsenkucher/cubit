@@ -6,6 +6,8 @@ import 'package:path_provider/path_provider.dart';
 import 'package:synchronized/synchronized.dart';
 // ignore: implementation_imports
 import 'package:hive/src/hive_impl.dart';
+// ignore: implementation_imports
+import 'package:hive/src/box/default_compaction_strategy.dart';
 
 import 'hydrated_cipher.dart';
 
@@ -73,7 +75,7 @@ class HydratedStorage implements Storage {
       final box = await hive.openBox<dynamic>(
         'hydrated_box',
         encryptionCipher: encryptionCipher,
-        compactionStrategy: compactionStrategy,
+        compactionStrategy: compactionStrategy ?? defaultCompactionStrategy,
       );
       return _instance = HydratedStorage(box);
     });
