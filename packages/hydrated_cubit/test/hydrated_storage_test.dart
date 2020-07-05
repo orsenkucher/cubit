@@ -8,6 +8,7 @@ import 'package:mockito/mockito.dart';
 import 'package:path/path.dart' as p;
 import 'package:path_provider/path_provider.dart';
 import 'package:pedantic/pedantic.dart';
+import 'package:hive/src/box/box_base_impl.dart';
 
 class MockBox extends Mock implements Box<dynamic> {}
 
@@ -67,6 +68,26 @@ void main() {
         final directory = await getTemporaryDirectory();
         expect(box, isNotNull);
         expect(box.path, p.join(directory.path, 'hydrated_box.hive'));
+      });
+
+      test('usues defaultCompactionStrategy when needed', () async {
+        storage = await HydratedStorage.build(compactionStrategy: null);
+        // TODO
+      });
+
+      // performCompactionIfNeeded
+      test('invokes compactionStrategy', () async {
+        var counter = 0;
+        storage = await HydratedStorage.build(compactionStrategy: (_, __) {
+          counter++;
+          return false;
+        });
+
+        final box = HydratedStorage.hive?.box<dynamic>('hydrated_box');
+        // ignore: invalid_use_of_protected_member
+        await (box as BoxBaseImpl)?.performCompactionIfNeeded();
+
+        expect(counter, 1);
       });
     });
 
