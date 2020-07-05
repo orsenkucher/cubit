@@ -47,9 +47,21 @@ class HydratedStorage implements Storage {
   /// final byteskey = sha256.convert(utf8.encode(password)).bytes;
   /// return HydratedAesCipher(byteskey);
   /// ```
+  ///
+  /// Use [compactionStrategy] if you want to specify custom rules
+  /// for automatic compaction. Otherwise default strategy is used.
+  /// And `NEVER access a box from the compaction strategy.`
+  ///
+  /// Example:
+  /// ```dart
+  /// await HydratedStorage.build(compactionStrategy: (_, removedEntries) {
+  ///   return deletedEntries > 50;
+  /// });
+  /// ```
   static Future<HydratedStorage> build({
     Directory storageDirectory,
     HydratedCipher encryptionCipher,
+    CompactionStrategy compactionStrategy,
   }) {
     return _lock.synchronized(() async {
       if (_instance != null) return _instance;
@@ -61,6 +73,7 @@ class HydratedStorage implements Storage {
       final box = await hive.openBox<dynamic>(
         'hydrated_box',
         encryptionCipher: encryptionCipher,
+        compactionStrategy: compactionStrategy,
       );
       return _instance = HydratedStorage(box);
     });
@@ -103,4 +116,16 @@ class HydratedStorage implements Storage {
     }
     return null;
   }
+
+  /// Induces manual box compaction. It's rarely needed.
+  /// Consider using custom compaction strategy instead.
+  ///
+  /// `compact` is [HydratedStorage] specific feature,
+  /// to use it downcast `Storage` to `HydratedStorage`.
+  Future<void> compact() {
+    return _lock.synchronized(_box.compact);
+  }
 }
+
+/// A function which decides when to compact a box.
+typedef CompactionStrategy = bool Function(int entries, int deletedEntries);
