@@ -14,7 +14,11 @@ dependencies:
     sdk: flutter
   meta: ^1.1.8
   cubit: ^0.1.2
-  hive: ^1.4.1+1
+  # hive: ^1.4.1+1
+  hive:
+    git: 
+      url: https://github.com/orsenkucher/hive.git
+      path: hive
   synchronized: ^2.2.0
   path_provider: ^1.6.5
 
