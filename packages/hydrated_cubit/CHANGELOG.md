@@ -1,3 +1,17 @@
+# 0.1.4
+
+- docs: inline documentation improvements
+- fix: upgrade to `cubit: ^0.1.2`
+
+# 0.1.3
+
+- fix: excessive storage reads and `fromJson` invocations
+- docs: minor documentation improvements
+
+# 0.1.2
+
+- fix: reintroduce migration code to ensure no data loss ([#67](https://github.com/felangel/hydrated_bloc/issues/67))
+
 # 0.1.1
 
 - fix: support use alongside hive ([#53](https://github.com/felangel/cubit/pull/53))
